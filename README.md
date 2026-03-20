@@ -1,5 +1,7 @@
 # n2-qln
 
+[![npm](https://img.shields.io/npm/v/n2-qln?color=brightgreen)](https://www.npmjs.com/package/n2-qln) [![license](https://img.shields.io/npm/l/n2-qln)](LICENSE) [![node](https://img.shields.io/node/v/n2-qln?color=brightgreen)](https://nodejs.org) [![downloads](https://img.shields.io/npm/dm/n2-qln?color=blue)](https://www.npmjs.com/package/n2-qln)
+
 **QLN** = **Q**uery **L**ayer **N**etwork — a semantic search layer that sits between the AI and your tools.
 
 > **Route 1,000+ tools through 1 MCP tool.** The AI sees only the router — not all 1,000 tools.
