@@ -221,7 +221,6 @@ QLN is designed to work well without any external dependencies. Ollama is a bonu
 | Project | Relationship |
 |---------|-------------|
 | [n2-soul](https://github.com/choihyunsus/n2-soul) | AI agent orchestrator — QLN serves as Soul's "tool brain" |
-| [n2-ark](https://github.com/choihyunsus/n2-soul) | Security layer — QLN tool calls pass through Ark's firewall |
 
 ## License
 
