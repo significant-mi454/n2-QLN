@@ -54,14 +54,18 @@ function registerQlnCall(server, z, router, executor, registry) {
             },
         },
         async (params) => {
-            switch (params.action) {
-                case 'search': return _handleSearch(router, params);
-                case 'exec':   return _handleExec(executor, registry, params);
-                case 'create': return _handleCreate(registry, router, params);
-                case 'update': return _handleUpdate(registry, router, params);
-                case 'delete': return _handleDelete(registry, router, params);
-                default:
-                    return _error(`Unknown action: ${params.action}`);
+            try {
+                switch (params.action) {
+                    case 'search': return await _handleSearch(router, registry, params);
+                    case 'exec':   return await _handleExec(executor, registry, params);
+                    case 'create': return await _handleCreate(registry, router, params);
+                    case 'update': return await _handleUpdate(registry, router, params);
+                    case 'delete': return await _handleDelete(registry, router, params);
+                    default:
+                        return _error(`Unknown action: ${params.action}`);
+                }
+            } catch (err) {
+                return _error(`QLN internal error: ${err.message}. Try the action again or use raw tool calls as fallback.`);
             }
         }
     );
@@ -70,14 +74,23 @@ function registerQlnCall(server, z, router, executor, registry) {
 // ── Action Handlers ──
 
 /** Search tools by natural language query */
-async function _handleSearch(router, { query, topK }) {
+async function _handleSearch(router, registry, { query, topK }) {
     if (!query) return _error('Missing required param: query');
     try {
         const k = Math.min(topK || 5, 20);
         const { results, timing } = await router.route(query, { topK: k });
 
         if (results.length === 0) {
-            return _text(`No tools found for: "${query}" (${timing.total}ms)`);
+            // Blind Spot prevention: show available categories so AI doesn't hallucinate
+            const stats = registry.stats();
+            const categories = Object.entries(stats.byCategory)
+                .map(([cat, count]) => `${cat}(${count})`)
+                .join(', ');
+            return _text(
+                `No tools found for: "${query}" (${timing.total}ms)\n\n` +
+                `Available categories [${stats.total} tools]: ${categories || 'none'}\n` +
+                `→ Try a different keyword, or check available categories above.`
+            );
         }
 
         const lines = results.map((r, i) => {
