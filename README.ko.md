@@ -349,6 +349,39 @@ module.exports = {
 | **기본** (Ollama 없음) | Stage 1 + 2 | ⭐⭐⭐⭐ 훌륭 | 없음 |
 | **Ollama 포함** | Stage 1 + 2 + 3 | ⭐⭐⭐⭐⭐ 완벽 | Ollama 실행 필요 |
 
+### 다국어 사용자
+
+`nomic-embed-text`는 영어에 최적화되어 있습니다. **한국어, 일본어, 중국어** 등 다른 언어를 사용한다면 다국어 모델로 교체하세요:
+
+```bash
+ollama pull bge-m3
+```
+
+```javascript
+// config.local.js
+module.exports = {
+  embedding: {
+    enabled: true,
+    model: 'bge-m3',  // 다국어 지원 (100개 이상 언어)
+  },
+};
+```
+
+코드 수정 없이 config의 모델명만 바꾸면 됩니다.
+
+### 클라우드 동기화
+
+도구 인덱스를 여러 기기에서 동기화하고 싶다면 `dataDir`을 클라우드 폴더로 지정하세요:
+
+```javascript
+// config.local.js
+module.exports = {
+  dataDir: 'G:/My Drive/n2-qln',  // Google Drive, OneDrive, Dropbox, NAS...
+};
+```
+
+[n2-soul 클라우드 스토리지](https://github.com/choihyunsus/n2-soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere)와 동일한 방식입니다. SQLite 파일이 해당 폴더에 저장되고, 동기화 서비스가 나머지를 처리합니다.
+
 ---
 
 ## 프로젝트 구조

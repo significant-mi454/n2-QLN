@@ -369,6 +369,39 @@ module.exports = {
 | **Default** (no Ollama) | Stage 1 + 2 | ⭐⭐⭐⭐ Great | None |
 | **With Ollama** | Stage 1 + 2 + 3 | ⭐⭐⭐⭐⭐ Perfect | Ollama running |
 
+### Multilingual Users
+
+`nomic-embed-text` is optimized for English. For **Korean, Japanese, Chinese**, or other languages, swap to a multilingual model:
+
+```bash
+ollama pull bge-m3
+```
+
+```javascript
+// config.local.js
+module.exports = {
+  embedding: {
+    enabled: true,
+    model: 'bge-m3',  // multilingual (100+ languages)
+  },
+};
+```
+
+No code changes needed — just swap the model name in config.
+
+### Cloud Sync
+
+Want your tool index synced across machines? Point `dataDir` to a cloud folder:
+
+```javascript
+// config.local.js
+module.exports = {
+  dataDir: 'G:/My Drive/n2-qln',  // Google Drive, OneDrive, Dropbox, NAS...
+};
+```
+
+Same approach as [n2-soul Cloud Storage](https://github.com/choihyunsus/n2-soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere). SQLite file lives in that folder — your sync service handles the rest.
+
 ---
 
 ## Project Structure
