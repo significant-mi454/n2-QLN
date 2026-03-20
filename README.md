@@ -4,23 +4,7 @@
 
 > **Route 1,000+ tools through 1 MCP tool.** The AI sees only the router — not all 1,000 tools.
 
-```
-Without QLN                        With QLN
-┌──────────────────┐               ┌──────────────────┐
-│   AI Context     │               │   AI Context     │
-│                  │               │                  │
-│  📦 tool_1       │               │  🧠 n2_qln_call  │  ← only 1 tool (~200 tokens)
-│  📦 tool_2       │               └────────┬─────────┘
-│  📦 tool_3       │                        │ "take a screenshot"
-│  📦 ...          │               ┌────────▼─────────┐
-│  📦 tool_1000    │               │  SQLite Index     │  ← 1,000+ tools indexed
-│                  │               │  Semantic Search  │
-│  ~50,000 tokens  │               └────────┬─────────┘
-└──────────────────┘                        │ best match
-                                   ┌────────▼─────────┐
-                                   │  take_screenshot  │  ← execute only what's needed
-                                   └──────────────────┘
-```
+![QLN Architecture — Without vs With](docs/architecture.png)
 
 ## Why?
 
@@ -224,4 +208,4 @@ QLN is designed to work well without any external dependencies. Ollama is a bonu
 
 ## License
 
-MIT
+Apache-2.0
