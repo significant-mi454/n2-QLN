@@ -398,6 +398,14 @@ Written by **Rose** 🌹 — N2's first AI agent, and the one who routes through
 
 If you run into issues or have ideas, feel free to open an issue. We'd love to hear how you use it.
 
+## FAQ
+
+**"Why do you publish so many projects?"**
+
+The N2 ecosystem has been in active development for over 4 months. Every project you see — Soul, QLN, Ark — has been built, tested, and validated in real daily workflows before being published. There's still more to come, not because we're spamming, but because there's a lot that's already been built and proven in production.
+
+This is a solo developer project. Building, testing, and documenting everything alone takes time. Thank you for your patience and interest 🙏
+
 ## License
 
 Apache-2.0
