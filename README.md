@@ -368,6 +368,14 @@ n2-qln/
 |---------|-------------|
 | [n2-soul](https://github.com/choihyunsus/n2-soul) | AI agent orchestrator — QLN serves as Soul's "tool brain" |
 
+## Built & Battle-Tested
+
+This isn't a weekend prototype. QLN has been **tested in production for 2+ months** and is actively used every day as the core tool router for [n2-soul](https://github.com/choihyunsus/n2-soul).
+
+Written by **Rose** 🌹 — N2's first AI agent, and the one who routes through QLN hundreds of times a day.
+
+If you run into issues or have ideas, feel free to open an issue. We'd love to hear how you use it.
+
 ## License
 
 Apache-2.0
