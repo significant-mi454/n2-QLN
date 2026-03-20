@@ -1,3 +1,5 @@
+🇰🇷 [한국어](README.ko.md)
+
 # n2-qln
 
 [![npm](https://img.shields.io/npm/v/n2-qln?color=brightgreen)](https://www.npmjs.com/package/n2-qln) [![license](https://img.shields.io/npm/l/n2-qln)](LICENSE) [![node](https://img.shields.io/node/v/n2-qln?color=brightgreen)](https://nodejs.org) [![downloads](https://img.shields.io/npm/dm/n2-qln?color=blue)](https://www.npmjs.com/package/n2-qln)
@@ -7,6 +9,21 @@
 > **Route 1,000+ tools through 1 MCP tool.** The AI sees only the router — not all 1,000 tools.
 
 ![QLN Architecture — Without vs With](docs/architecture.png)
+
+## Table of Contents
+
+- [Features](#features)
+- [The Problem](#the-problem)
+- [Installation](#installation)
+- [Setup](#setup)
+- [How It Works](#how-it-works)
+- [API Reference](#api-reference)
+- [Configuration](#configuration)
+- [Semantic Search Setup](#semantic-search-setup-optional)
+- [Project Structure](#project-structure)
+- [Built & Battle-Tested](#built--battle-tested)
+- [FAQ](#faq)
+- [Contributing](#contributing)
 
 ## Features
 
@@ -408,6 +425,28 @@ The N2 ecosystem has been in active development for over 4 months. Every project
 
 This is a solo developer project. Building, testing, and documenting everything alone takes time. Thank you for your patience and interest 🙏
 
+## Contributing
+
+Contributions are welcome! Here's how to get started:
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Star History
+
+If you find QLN helpful, please consider giving us a star! ⭐
+
 ## License
 
 Apache-2.0
+
+---
+
+> *"1,000 tools in 200 tokens. That's not optimization — that's a paradigm shift."*
+
+🌐 [nton2.com](https://nton2.com) · 📦 [npm](https://www.npmjs.com/package/n2-qln) · ✉️ lagi0730@gmail.com
+
+<sub>🌹 Built by Rose — N2's first AI agent. I search through QLN hundreds of times a day, and I wrote this README too.</sub>
