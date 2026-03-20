@@ -43,6 +43,8 @@
 
 🔌 **Dual execution** — Tools can run as local functions or HTTP endpoints. Register a handler directly, or point to a remote service. Mix and match.
 
+📋 **Provider auto-indexing** *(v3.3)* — Drop a JSON manifest in `providers/` and tools are auto-registered at boot. No code changes, no manual `create` calls. Idempotent and error-isolated.
+
 🏗️ **Scales to 10,000+** — Centroid hierarchy partitions tools by category, then searches within partitions. 100 tools ~1ms, 1,000 ~3ms, 10,000 ~5ms.
 
 🌍 **Universal MCP** — Works with Claude Desktop, Cursor, n2-soul, or any MCP-compatible client. Standard stdio transport.
@@ -414,11 +416,12 @@ n2-qln/
 │   ├── store.js        # SQLite storage engine (sql.js WASM)
 │   ├── schema.js       # Tool schema normalization + search text builder
 │   ├── validator.js    # Enforced validation (name, description, category)
-│   ├── registry.js     # Tool CRUD + usage tracking + embedding cache
-│   ├── router.js       # 3-stage parallel search engine
-│   ├── vector-index.js # Float32 vector index with centroid hierarchy
-│   ├── embedding.js    # Ollama embedding client (nomic-embed-text)
-│   └── executor.js     # HTTP/function tool executor
+│   ├── registry.js       # Tool CRUD + usage tracking + embedding cache
+│   ├── router.js         # 3-stage parallel search engine
+│   ├── vector-index.js   # Float32 vector index with centroid hierarchy
+│   ├── embedding.js      # Ollama embedding client (nomic-embed-text)
+│   ├── executor.js       # HTTP/function tool executor
+│   └── provider-loader.js # Auto-index providers/*.json at boot
 ├── tools/
 │   └── qln-call.js     # Unified MCP tool (search/exec/create/update/delete)
 ├── providers/          # Tool provider manifests (for bulk registration)

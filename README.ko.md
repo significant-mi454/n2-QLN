@@ -43,6 +43,8 @@
 
 🔌 **이중 실행** — 도구를 로컬 함수 또는 HTTP 엔드포인트로 실행. 핸들러를 직접 등록하거나 원격 서비스를 연결. 혼합도 가능.
 
+📋 **Provider 자동 인덱싱** *(v3.3)* — `providers/`에 JSON 매니페스트를 넣으면 부팅 시 자동 등록. 코드 수정 불필요, 수동 `create` 호출 불필요. 멱등성 보장 및 에러 격리.
+
 🏗️ **10,000개 이상 확장** — 카테고리별 centroid hierarchy 파티셔닝. 100개 ~1ms, 1,000개 ~3ms, 10,000개 ~5ms.
 
 🌍 **범용 MCP** — Claude Desktop, Cursor, n2-soul 또는 모든 MCP 호환 클라이언트에서 동작. 표준 stdio 전송.
@@ -398,7 +400,8 @@ n2-qln/
 │   ├── router.js       # 3단계 검색 엔진
 │   ├── vector-index.js # Float32 벡터 인덱스 (centroid hierarchy)
 │   ├── embedding.js    # Ollama 임베딩 클라이언트 (nomic-embed-text)
-│   └── executor.js     # HTTP/함수 도구 실행기
+│   ├── executor.js     # HTTP/함수 도구 실행기
+│   └── provider-loader.js # 부팅 시 providers/*.json 자동 인덱싱
 ├── tools/
 │   └── qln-call.js     # 통합 MCP 도구 (search/exec/create/update/delete)
 ├── providers/          # 도구 provider 매니페스트 (일괄 등록용)
