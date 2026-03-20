@@ -6,6 +6,28 @@
 
 ![QLN Architecture — Without vs With](docs/architecture.png)
 
+## Features
+
+🔍 **One tool to rule them all** — Your AI sees `n2_qln_call` (~200 tokens), not 1,000 individual tools. 99.6% context reduction.
+
+⚡ **Sub-5ms search** — 3-stage parallel engine (trigger + keyword + semantic) finds the right tool in under 5ms, even with 1,000+ tools indexed.
+
+📈 **Self-learning ranking** — Tools that get used more and succeed more are automatically ranked higher over time. No manual tuning needed.
+
+🔄 **Live tool management** — Add, update, or remove tools at runtime. No server restart required. Group tools by provider for bulk operations.
+
+🛡️ **Enforced quality** — Strict validation on tool registration: `verb_target` naming, minimum description length, category constraints. Bad tools are rejected, not silently accepted.
+
+🧠 **Semantic search (optional)** — Add [Ollama](https://ollama.ai) for vector similarity search. Without it, Stage 1 + 2 still deliver great results. Graceful degradation — if Ollama goes down, search keeps working.
+
+📦 **Zero native dependencies** — Built on [sql.js](https://github.com/sql-js/sql.js) (WASM). No `node-gyp`, no build step, no platform-specific binaries. `npm install` and done.
+
+🔌 **Dual execution** — Tools can run as local functions or HTTP endpoints. Register a handler directly, or point to a remote service. Mix and match.
+
+🏗️ **Scales to 10,000+** — Centroid hierarchy partitions tools by category, then searches within partitions. 100 tools ~1ms, 1,000 ~3ms, 10,000 ~5ms.
+
+🌍 **Universal MCP** — Works with Claude Desktop, Cursor, n2-soul, or any MCP-compatible client. Standard stdio transport.
+
 ## The Problem
 
 Every MCP tool you register eats AI context tokens. With 10 tools that's manageable. With 100, the AI slows down. **With 1,000, it's impossible** — the context window is full before the conversation even starts.
