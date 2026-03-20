@@ -129,7 +129,7 @@ n2_qln_call({
   category: "data",
   provider: "pdf-tools",
   tags: ["pdf", "read", "extract", "document"],
-  examples: ["PDF 파일 읽어줘", "read this PDF", "extract text from PDF"]
+  examples: ["read this PDF file", "read this PDF", "extract text from PDF"]
 })
 
 // → ✅ Created: read_pdf [local/data]
@@ -145,7 +145,7 @@ n2_qln_call({
 n2_qln_call({
   action: "update",
   tool: "read_pdf",
-  examples: ["PDF 파일 읽어줘", "read this PDF", "summarize this PDF"]
+  examples: ["read this PDF file", "read this PDF", "summarize this PDF"]
 })
 // Same validation rules apply to updates
 ```
