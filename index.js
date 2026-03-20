@@ -14,10 +14,8 @@ const { VectorIndex } = require('./lib/vector-index');
 const { Router } = require('./lib/router');
 const { Executor } = require('./lib/executor');
 
-// MCP Tools
-const { registerRouteTool } = require('./tools/route');
-const { registerExecTool } = require('./tools/exec');
-const { registerManageTools } = require('./tools/manage');
+// MCP Tool (unified)
+const { registerQlnCall } = require('./tools/qln-call');
 
 async function main() {
     const config = loadConfig();
@@ -50,13 +48,11 @@ async function main() {
     // 3. Create MCP server
     const server = new McpServer({
         name: 'n2-qln',
-        version: '3.0.0',
+        version: '3.1.0',
     });
 
-    // 4. Register MCP tools
-    registerRouteTool(server, z, router);
-    registerExecTool(server, z, executor, registry);
-    registerManageTools(server, z, registry, router);
+    // 4. Register unified MCP tool (1 tool, 5 actions)
+    registerQlnCall(server, z, router, executor, registry);
 
     // 5. Connect stdio transport
     const transport = new StdioServerTransport();

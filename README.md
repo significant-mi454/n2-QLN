@@ -197,8 +197,8 @@ module.exports = {
 
 | 현재 Soul 도구 | QLN 이후 |
 |---------------|---------|
-| `n2_tool_route` | → QLN L1 라우터로 대체 |
-| `n2_qln_call` | → QLN L3 실행기로 대체 |
+| `n2_tool_route` | → QLN `n2_qln_call(action: "search")` 로 대체 |
+| `n2_qln_call` | → QLN `n2_qln_call(action: "exec")` 로 대체 |
 | `n2_cdp_discover` | → QLN에 등록되는 도구 중 하나 |
 | 브라우저 도구들 | → QLN 인덱스에 등록 |
 
@@ -206,25 +206,25 @@ module.exports = {
 
 ## 📅 로드맵
 
-### Phase 1: 코어 (v0.1)
-- [ ] 프로젝트 초기화 (npm init)
-- [ ] L1 라우터 구현 (자연어 → 의도)
-- [ ] L2 SQLite 인덱스 구현 (임베딩 검색)
-- [ ] L3 도구 실행기 구현
-- [ ] MCP 서버로 등록
+### Phase 1: 코어 (v3.0 → v3.1) ✅
+- [x] 프로젝트 초기화 (npm init)
+- [x] L1 라우터 구현 (자연어 → 3-Stage 검색)
+- [x] L2 SQLite 인덱스 구현 (임베딩 검색)
+- [x] L3 도구 실행기 구현
+- [x] MCP 서버로 등록 (통합 `n2_qln_call` 1도구)
 - [ ] 기본 도구 10개 내장 (파일, 브라우저 등)
 
-### Phase 2: Soul 연동 (v0.2)
+### Phase 2: Soul 연동 (v3.2)
 - [ ] Soul 플러그인 인터페이스
 - [ ] 기존 `n2_tool_route` / `n2_qln_call` 마이그레이션
 - [ ] 브라우저 CDP 도구 자동 등록
 - [ ] KV-Cache 시맨틱 검색 연동
 
-### Phase 3: 생태계 (v1.0)
+### Phase 3: 생태계 (v4.0)
 - [ ] 도구 마켓플레이스 (커뮤니티 도구 공유)
 - [ ] 자동 도구 발견 (MCP 서버 스캔)
 - [ ] 도구 체인 (도구 A 결과 → 도구 B 입력)
-- [ ] npm 배포
+- [x] npm 배포
 
 ---
 
@@ -267,24 +267,21 @@ Add to your MCP config (`mcp_config.json` or Claude Desktop config):
 }
 ```
 
-### Exposed Tools (only 4 in AI context!)
+### Exposed Tool (only 1 in AI context!)
 
-| Tool | Description |
-|------|-------------|
-| `qln_route` | Search tools by natural language query |
-| `qln_exec` | Execute a tool by name |
-| `qln_register` | Register a new tool in the index |
-| `qln_stats` | Show index statistics |
+| Tool | Actions | AI Tokens |
+|------|---------|:-:|
+| `n2_qln_call` | search, exec, create, update, delete | ~200 |
 
 ### How it works (AI Agent POV)
 
 ```
 USER: "Take a screenshot of this page"
 
-[Step 1] AI calls qln_route(query: "screenshot page")
+[Step 1] AI calls n2_qln_call(action: "search", query: "screenshot page")
          → Result: take_screenshot (score: 8.0) in 1ms
 
-[Step 2] AI calls qln_exec(tool: "take_screenshot", args: {fullPage: true})
+[Step 2] AI calls n2_qln_call(action: "exec", tool: "take_screenshot", args: {fullPage: true})
          → Result: screenshot saved
 
 Token usage: 200 tokens (vs 50,000 with 1000 tools registered normally)
@@ -314,9 +311,7 @@ n2-qln/
 │   ├── router.js     # L1 3-Stage search engine
 │   └── executor.js   # L3 tool executor
 ├── tools/
-│   ├── route.js      # qln_route MCP tool
-│   ├── exec.js       # qln_exec MCP tool
-│   └── manage.js     # qln_register / qln_stats
+│   └── qln-call.js   # Unified n2_qln_call (search/exec/create/update/delete)
 ├── package.json
 └── config.local.js   # (optional) Local config overrides
 ```
