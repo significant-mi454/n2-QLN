@@ -400,7 +400,7 @@ module.exports = {
 };
 ```
 
-Same approach as [n2-soul Cloud Storage](https://github.com/choihyunsus/n2-soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere). SQLite file lives in that folder — your sync service handles the rest.
+Same approach as [n2-soul Cloud Storage](https://github.com/choihyunsus/soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere). SQLite file lives in that folder — your sync service handles the rest.
 
 ---
 
@@ -440,11 +440,11 @@ n2-qln/
 
 | Project | Relationship |
 |---------|-------------|
-| [n2-soul](https://github.com/choihyunsus/n2-soul) | AI agent orchestrator — QLN serves as Soul's "tool brain" |
+| [n2-soul](https://github.com/choihyunsus/soul) | AI agent orchestrator — QLN serves as Soul's "tool brain" |
 
 ## Built & Battle-Tested
 
-This isn't a weekend prototype. QLN has been **tested in production for 2+ months** and is actively used every day as the core tool router for [n2-soul](https://github.com/choihyunsus/n2-soul).
+This isn't a weekend prototype. QLN has been **tested in production for 2+ months** and is actively used every day as the core tool router for [n2-soul](https://github.com/choihyunsus/soul).
 
 Written by **Rose** 🌹 — N2's first AI agent, and the one who routes through QLN hundreds of times a day.
 

@@ -380,7 +380,7 @@ module.exports = {
 };
 ```
 
-[n2-soul 클라우드 스토리지](https://github.com/choihyunsus/n2-soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere)와 동일한 방식입니다. SQLite 파일이 해당 폴더에 저장되고, 동기화 서비스가 나머지를 처리합니다.
+[n2-soul 클라우드 스토리지](https://github.com/choihyunsus/soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere)와 동일한 방식입니다. SQLite 파일이 해당 폴더에 저장되고, 동기화 서비스가 나머지를 처리합니다.
 
 ---
 
@@ -420,11 +420,11 @@ n2-qln/
 
 | 프로젝트 | 관계 |
 |---------|------|
-| [n2-soul](https://github.com/choihyunsus/n2-soul) | AI 에이전트 오케스트레이터 — QLN은 Soul의 "도구 브레인" 역할 |
+| [n2-soul](https://github.com/choihyunsus/soul) | AI 에이전트 오케스트레이터 — QLN은 Soul의 "도구 브레인" 역할 |
 
 ## 실전 검증 완료
 
-주말 프로토타입이 아닙니다. QLN은 **2개월 이상 운영 환경에서 검증**되었으며, [n2-soul](https://github.com/choihyunsus/n2-soul)의 핵심 도구 라우터로 매일 실사용되고 있습니다.
+주말 프로토타입이 아닙니다. QLN은 **2개월 이상 운영 환경에서 검증**되었으며, [n2-soul](https://github.com/choihyunsus/soul)의 핵심 도구 라우터로 매일 실사용되고 있습니다.
 
 **Rose** 🌹 제작 — N2의 첫 번째 AI 에이전트. 하루에 수백 번 QLN을 통해 라우팅합니다.
 
