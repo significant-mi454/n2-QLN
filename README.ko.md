@@ -29,7 +29,9 @@
 
 🔍 **하나의 도구로 모든 것을** — AI는 `n2_qln_call` (~200 토큰)만 봅니다. 1,000개의 개별 도구가 아닙니다. 99.6% 컨텍스트 절감.
 
-⚡ **5ms 이하 검색** — 3단계 검색 엔진 (트리거 + 키워드 + 시맨틱)이 1,000개 이상의 도구에서도 5ms 이내에 최적 도구를 찾습니다.
+⚡ **5ms 이하 검색** — 3단계 검색 엔진 (트리거 + BM25 키워드 + 시맨틱)이 1,000개 이상의 도구에서도 5ms 이내에 최적 도구를 찾습니다.
+
+🎯 **BM25 키워드 랭킹** *(v3.4)* — Stage 2에 [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) 알고리즘 적용. 희귀한 단어일수록 높은 점수, 문서 길이 정규화. Google, Elasticsearch, Wikipedia 검색의 핵심 알고리즘.
 
 📈 **자동 학습 랭킹** — 많이 사용되고 성공률이 높은 도구는 자동으로 상위에 랭크됩니다. 수동 튜닝 불필요.
 
@@ -184,14 +186,14 @@ QLN은 세 단계의 검색으로 적합한 도구를 찾습니다:
 | 단계 | 방식 | 속도 | 작동 원리 |
 |:---:|--------|:---:|---------|
 | **1** | 트리거 매칭 | ⚡ <1ms | 도구 이름과 트리거 키워드 정확 매칭 |
-| **2** | 키워드 검색 | ⚡ 1-3ms | 설명, 태그, 예제 전문 검색 |
+| **2** | BM25 키워드 | ⚡ 1-3ms | [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) 랭킹 검색 — IDF 가중치 + 문서 길이 정규화 *(v3.4)* |
 | **3** | 시맨틱 검색 | 🧠 5-15ms | 임베딩 벡터 유사도 검색 *(선택, Ollama 필요)* |
 
 모든 단계의 결과를 병합 후 랭킹:
 
 ```
 final_score = trigger_score × 3.0
-            + keyword_score × 1.0
+            + bm25_keyword_score × 1.0
             + semantic_score × 2.0
             + log2(usage_count + 1) × 0.5
             + success_rate × 1.0
@@ -397,7 +399,7 @@ n2-qln/
 │   ├── schema.js       # 도구 스키마 정규화 + 검색 텍스트 빌더
 │   ├── validator.js    # 강제 검증 (이름, 설명, 카테고리)
 │   ├── registry.js     # 도구 CRUD + 사용량 추적 + 임베딩 캐시
-│   ├── router.js       # 3단계 검색 엔진
+│   ├── router.js       # 3단계 검색 엔진 (BM25 v3.4)
 │   ├── vector-index.js # Float32 벡터 인덱스 (centroid hierarchy)
 │   ├── embedding.js    # Ollama 임베딩 클라이언트 (nomic-embed-text)
 │   ├── executor.js     # HTTP/함수 도구 실행기

@@ -29,7 +29,9 @@
 
 🔍 **One tool to rule them all** — Your AI sees `n2_qln_call` (~200 tokens), not 1,000 individual tools. 99.6% context reduction.
 
-⚡ **Sub-5ms search** — 3-stage search engine (trigger + keyword + semantic) finds the right tool in under 5ms, even with 1,000+ tools indexed.
+⚡ **Sub-5ms search** — 3-stage search engine (trigger + BM25 keyword + semantic) finds the right tool in under 5ms, even with 1,000+ tools indexed.
+
+🎯 **BM25 keyword ranking** *(v3.4)* — Stage 2 uses [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) for keyword search. Rare terms score higher, document length is normalized. The same algorithm behind Google, Elasticsearch, and Wikipedia search.
 
 📈 **Self-learning ranking** — Tools that get used more and succeed more are automatically ranked higher over time. No manual tuning needed.
 
@@ -184,14 +186,14 @@ QLN finds the right tool using three parallel search stages:
 | Stage | Method | Speed | How it works |
 |:---:|--------|:---:|------|
 | **1** | Trigger Match | ⚡ <1ms | Matches exact words in tool names and trigger keywords |
-| **2** | Keyword Search | ⚡ 1-3ms | Full-text search across descriptions, tags, and examples |
+| **2** | BM25 Keyword | ⚡ 1-3ms | [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) ranked search — IDF weighting + document length normalization *(v3.4)* |
 | **3** | Semantic Search | 🧠 5-15ms | Vector similarity using embeddings *(optional, requires Ollama)* |
 
 Results from all stages are merged and ranked:
 
 ```
 final_score = trigger_score × 3.0
-            + keyword_score × 1.0
+            + bm25_keyword_score × 1.0
             + semantic_score × 2.0
             + log2(usage_count + 1) × 0.5
             + success_rate × 1.0
@@ -417,7 +419,7 @@ n2-qln/
 │   ├── schema.js       # Tool schema normalization + search text builder
 │   ├── validator.js    # Enforced validation (name, description, category)
 │   ├── registry.js       # Tool CRUD + usage tracking + embedding cache
-│   ├── router.js         # 3-stage parallel search engine
+│   ├── router.js         # 3-stage parallel search engine (BM25 v3.4)
 │   ├── vector-index.js   # Float32 vector index with centroid hierarchy
 │   ├── embedding.js      # Ollama embedding client (nomic-embed-text)
 │   ├── executor.js       # HTTP/function tool executor
