@@ -1,0 +1,217 @@
+{
+    "provider": "n2-browser",
+    "version": "0.7.2",
+    "description": "N2 Browser — AI-powered Electron browser with 67+ plugin tools",
+    "tools": [
+        {
+            "name": "capture_screenshot",
+            "description": "Capture viewport or full page as base64 PNG/JPEG",
+            "category": "capture",
+            "tags": ["screenshot", "capture", "viewport", "fullpage"],
+            "examples": ["take a screenshot", "capture this page", "screenshot full page"]
+        },
+        {
+            "name": "capture_element",
+            "description": "Capture specific element by ATree ref number",
+            "category": "capture",
+            "tags": ["element", "screenshot", "component"],
+            "examples": ["capture element 5", "screenshot this button"]
+        },
+        {
+            "name": "ext_screenshot",
+            "description": "Capture entire desktop/monitor screen",
+            "category": "capture",
+            "tags": ["desktop", "monitor", "screen", "system"],
+            "examples": ["capture desktop screen", "take system screenshot"]
+        },
+        {
+            "name": "start_recording",
+            "description": "Start recording browser actions (clicks, typing, navigation)",
+            "category": "capture",
+            "tags": ["record", "macro", "action", "session"],
+            "examples": ["start recording", "record my actions"]
+        },
+        {
+            "name": "stop_recording",
+            "description": "Stop recording and save session",
+            "category": "capture",
+            "tags": ["record", "stop", "save"],
+            "examples": ["stop recording", "save recording"]
+        },
+        {
+            "name": "ai_read",
+            "description": "Read page as clean markdown, stripping ads/nav/noise",
+            "category": "web",
+            "tags": ["read", "page", "markdown", "content", "extract"],
+            "examples": ["read this page", "extract page content", "get page text"]
+        },
+        {
+            "name": "ai_scroll",
+            "description": "Scroll to position, element, or by pages",
+            "category": "web",
+            "tags": ["scroll", "navigate", "position"],
+            "examples": ["scroll down", "scroll to bottom", "scroll to element"]
+        },
+        {
+            "name": "ai_surf",
+            "description": "Navigate to a URL in the current tab",
+            "category": "web",
+            "tags": ["navigate", "url", "goto", "open", "surf"],
+            "examples": ["go to google.com", "navigate to URL", "open website"]
+        },
+        {
+            "name": "human_click",
+            "description": "Click on element by SOM ref number or coordinates",
+            "category": "web",
+            "tags": ["click", "interact", "element", "button"],
+            "examples": ["click button", "click element 3", "click at coordinates"]
+        },
+        {
+            "name": "human_type",
+            "description": "Type text into focused element or by ref",
+            "category": "web",
+            "tags": ["type", "input", "text", "keyboard", "fill"],
+            "examples": ["type hello", "enter text in input", "fill search box"]
+        },
+        {
+            "name": "open_tab",
+            "description": "Open a URL in new tab, returns target ID",
+            "category": "web",
+            "tags": ["tab", "new", "open", "background"],
+            "examples": ["open new tab", "open URL in new tab"]
+        },
+        {
+            "name": "list_tabs",
+            "description": "List all open tabs with URLs and status",
+            "category": "web",
+            "tags": ["tab", "list", "manage"],
+            "examples": ["list all tabs", "show open tabs"]
+        },
+        {
+            "name": "switch_tab",
+            "description": "Switch to a different tab by ID",
+            "category": "web",
+            "tags": ["tab", "switch", "activate"],
+            "examples": ["switch to tab", "go to other tab"]
+        },
+        {
+            "name": "close_tab",
+            "description": "Close a tab by ID",
+            "category": "web",
+            "tags": ["tab", "close", "remove"],
+            "examples": ["close tab", "close this tab"]
+        },
+        {
+            "name": "scroll_and_read",
+            "description": "Scroll entire page (infinite/lazy) and extract all text",
+            "category": "web",
+            "tags": ["scroll", "read", "infinite", "lazy", "full"],
+            "examples": ["read entire page", "scroll and extract everything"]
+        },
+        {
+            "name": "browser_web_search",
+            "description": "Search the web across 70+ sources via SearXNG",
+            "category": "ai",
+            "tags": ["search", "web", "google", "research"],
+            "examples": ["search for AI news", "web search React hooks"]
+        },
+        {
+            "name": "browser_news_search",
+            "description": "Search recent news by topic and freshness",
+            "category": "ai",
+            "tags": ["news", "search", "recent", "current"],
+            "examples": ["search latest news about AI", "find recent articles"]
+        },
+        {
+            "name": "smart_read",
+            "description": "All-in-one page intelligence (content + iframes + shadow DOM)",
+            "category": "ai",
+            "tags": ["intelligence", "analyze", "deep", "read"],
+            "examples": ["deeply analyze this page", "smart read with iframes"]
+        },
+        {
+            "name": "extract_links",
+            "description": "Extract all page links categorized by type",
+            "category": "data",
+            "tags": ["links", "extract", "urls", "crawl"],
+            "examples": ["get all links on page", "extract URLs"]
+        },
+        {
+            "name": "parse_tables",
+            "description": "Parse HTML tables to structured JSON with headers",
+            "category": "data",
+            "tags": ["table", "parse", "json", "data", "csv"],
+            "examples": ["parse tables on page", "extract table data"]
+        },
+        {
+            "name": "scrape_data",
+            "description": "Extract structured data using CSS selectors",
+            "category": "data",
+            "tags": ["scrape", "data", "selector", "extract", "mine"],
+            "examples": ["scrape product prices", "extract listing data"]
+        },
+        {
+            "name": "html_to_markdown",
+            "description": "Convert page HTML to clean Markdown",
+            "category": "data",
+            "tags": ["markdown", "convert", "html", "format"],
+            "examples": ["convert page to markdown", "get markdown version"]
+        },
+        {
+            "name": "copy_to_clipboard",
+            "description": "Copy text to system clipboard",
+            "category": "data",
+            "tags": ["clipboard", "copy", "text"],
+            "examples": ["copy this text", "copy to clipboard"]
+        },
+        {
+            "name": "find_element",
+            "description": "Find elements by visible text, get selectors and positions",
+            "category": "web",
+            "tags": ["find", "element", "selector", "locate"],
+            "examples": ["find login button", "locate element with text"]
+        },
+        {
+            "name": "fill_form",
+            "description": "Auto-fill form fields with semantic field matching",
+            "category": "web",
+            "tags": ["form", "fill", "input", "login", "register"],
+            "examples": ["fill login form", "auto-fill registration"]
+        },
+        {
+            "name": "press_key",
+            "description": "Press key or combo (Ctrl+C, Enter, Alt+F4)",
+            "category": "web",
+            "tags": ["key", "keyboard", "shortcut", "press", "combo"],
+            "examples": ["press Enter", "press Ctrl+C", "keyboard shortcut"]
+        },
+        {
+            "name": "download_file",
+            "description": "Download file from URL or page resource",
+            "category": "data",
+            "tags": ["download", "file", "save", "resource"],
+            "examples": ["download this file", "save file from URL"]
+        },
+        {
+            "name": "resize_viewport",
+            "description": "Resize viewport to device preset (iPhone, iPad, desktop, 4K)",
+            "category": "web",
+            "tags": ["viewport", "resize", "responsive", "mobile", "device"],
+            "examples": ["resize to mobile", "set viewport to iPhone"]
+        },
+        {
+            "name": "toggle_dark_mode",
+            "description": "Toggle dark/light mode on any page",
+            "category": "web",
+            "tags": ["dark", "light", "mode", "theme"],
+            "examples": ["enable dark mode", "toggle dark mode"]
+        },
+        {
+            "name": "translate_text",
+            "description": "Translate text or entire page to target language",
+            "category": "web",
+            "tags": ["translate", "language", "i18n"],
+            "examples": ["translate to Korean", "translate this page"]
+        }
+    ]
+}
