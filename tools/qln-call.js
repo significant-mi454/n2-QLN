@@ -16,7 +16,7 @@ function registerQlnCall(server, z, router, executor, registry) {
         {
             title: 'QLN Call',
             description:
-                'Quantum Layer Network — unified tool dispatcher. ' +
+                'Query Layer Network — unified tool dispatcher. ' +
                 'Search 1000+ tools, execute them, or manage the index. ' +
                 'Actions: search, exec, create, update, delete.',
             inputSchema: {
@@ -48,7 +48,7 @@ function registerQlnCall(server, z, router, executor, registry) {
                 provider: z.string().optional()
                     .describe('[create/update] Provider name (e.g. "n2-browser", "pdf-tools")'),
                 examples: z.array(z.string()).optional()
-                    .describe('[create/update] Usage examples (e.g. ["PDF 파일 읽어줘", "read this PDF"])'),
+                    .describe('[create/update] Usage examples (e.g. ["read this PDF file", "extract text from PDF"])'),
                 endpoint: z.string().optional()
                     .describe('[create/update] Execution HTTP endpoint'),
             },

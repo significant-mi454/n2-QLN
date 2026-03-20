@@ -10,7 +10,7 @@
 
 🔍 **One tool to rule them all** — Your AI sees `n2_qln_call` (~200 tokens), not 1,000 individual tools. 99.6% context reduction.
 
-⚡ **Sub-5ms search** — 3-stage parallel engine (trigger + keyword + semantic) finds the right tool in under 5ms, even with 1,000+ tools indexed.
+⚡ **Sub-5ms search** — 3-stage search engine (trigger + keyword + semantic) finds the right tool in under 5ms, even with 1,000+ tools indexed.
 
 📈 **Self-learning ranking** — Tools that get used more and succeed more are automatically ranked higher over time. No manual tuning needed.
 
