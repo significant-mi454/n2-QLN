@@ -2,16 +2,17 @@
 
 > **"MCP의 FP2"** — 도구 1000개를 1개의 라우터로 압축하는 시맨틱 도구 디스패처
 
-## 📋 목차
+![QLN Architecture](docs/architecture.png)
 
-- [개요](#개요)
-- [핵심 컨셉](#핵심-컨셉)
-- [아키텍처](#아키텍처)
-- [기술 스택](#기술-스택)
-- [로드맵](#로드맵)
-- [관련 프로젝트](#관련-프로젝트)
+### 3-Layer Compression
 
----
+| Layer | Content | In AI Context? | Tokens |
+|:---:|---------|:-:|:---:|
+| **L1** | `n2_qln_call` + CRUD (Search/Create/Update/Delete) | ✅ Always | ~200 |
+| **L2** | Categories (Web, Image, PDF, Video...) | ❌ Discovered via Search | 0 |
+| **L3** | Actual tools (1000+) | ❌ Hidden | 0 |
+
+> **AI sees only L1 → 99.6% token savings**
 
 ## 🧠 개요
 
