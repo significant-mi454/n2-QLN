@@ -1,6 +1,6 @@
 {
     "name": "n2-qln",
-    "version": "3.3.3",
+    "version": "3.3.4",
     "description": "Query Layer Network — Semantic tool dispatcher for MCP. Route 1000 tools through 1 router.",
     "main": "index.js",
     "bin": {
@@ -8,7 +8,7 @@
     },
     "scripts": {
         "start": "node index.js",
-        "test": "node test/run.js"
+        "test": "node test/test-provider-loader.js"
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "~1.6.1",

@@ -110,35 +110,51 @@ async function runTests() {
     assert(goodTool !== null, 'good_tool registered');
     assert(registry.get('no_desc_tool') === null, 'no_desc_tool skipped (no description)');
 
-    // ─── Test 7: Real n2-browser.json ───
-    console.log('\nTest 7: Real n2-browser.json');
-    // Clean up temp files, use real providers dir
-    fs.rmSync(tmpDir, { recursive: true });
+    // ─── Test 7: Large manifest (self-contained mock) ───
+    console.log('\nTest 7: Large provider manifest (mock)');
+    // Clean up previous temp, create fresh environment
+    if (fs.existsSync(tmpDir)) fs.rmSync(tmpDir, { recursive: true });
+    fs.mkdirSync(tmpProviders, { recursive: true });
 
-    const realStore = new Store(path.join(ROOT, 'data', '_test_real'));
-    if (fs.existsSync(path.join(ROOT, 'data', '_test_real'))) {
-        fs.rmSync(path.join(ROOT, 'data', '_test_real'), { recursive: true });
+    const largeStore = new Store(path.join(ROOT, 'data', '_test_large'));
+    if (fs.existsSync(path.join(ROOT, 'data', '_test_large'))) {
+        fs.rmSync(path.join(ROOT, 'data', '_test_large'), { recursive: true });
     }
-    fs.mkdirSync(path.join(ROOT, 'data', '_test_real'), { recursive: true });
-    await realStore.init();
-    const realRegistry = new Registry(realStore);
-    realRegistry.load();
+    fs.mkdirSync(path.join(ROOT, 'data', '_test_large'), { recursive: true });
+    await largeStore.init();
+    const largeRegistry = new Registry(largeStore);
+    largeRegistry.load();
 
-    const r7 = loadProviders(path.join(ROOT, 'providers'), realRegistry);
-    assert(r7.loaded >= 25, `loaded≥25 from n2-browser.json (got ${r7.loaded})`);
+    // Generate a realistic provider manifest with 30 tools
+    const largeManifest = {
+        provider: 'mock-browser',
+        version: '1.0.0',
+        description: 'Mock browser provider for testing',
+        tools: Array.from({ length: 30 }, (_, i) => ({
+            name: `mock_tool_${i + 1}`,
+            description: `Mock tool ${i + 1} for testing provider loader`,
+            category: ['web', 'screenshot', 'dom', 'data', 'nav'][i % 5],
+            tags: [`tag_${i % 3}`, 'mock'],
+        })),
+    };
+    fs.writeFileSync(path.join(tmpProviders, 'mock-browser.json'), JSON.stringify(largeManifest, null, 2));
+
+    const r7 = loadProviders(tmpProviders, largeRegistry);
+    assert(r7.loaded === 30, `loaded=30 from mock manifest (got ${r7.loaded})`);
     assert(r7.failed === 0, `failed=0 (got ${r7.failed})`);
 
-    const screenshot = realRegistry.get('capture_screenshot');
-    assert(screenshot !== null, 'capture_screenshot registered');
-    assert(screenshot?.provider === 'n2-browser', `provider=n2-browser (got ${screenshot?.provider})`);
-    assert(screenshot?.tags?.includes('screenshot'), 'has screenshot tag');
+    const mockTool1 = largeRegistry.get('mock_tool_1');
+    assert(mockTool1 !== null, 'mock_tool_1 registered');
+    assert(mockTool1?.provider === 'mock-browser', `provider=mock-browser (got ${mockTool1?.provider})`);
+    assert(mockTool1?.tags?.includes('mock'), 'has mock tag');
 
-    const aiRead = realRegistry.get('ai_read');
-    assert(aiRead !== null, 'ai_read registered');
-    assert(aiRead?.category === 'web', `category=web (got ${aiRead?.category})`);
+    const mockTool15 = largeRegistry.get('mock_tool_15');
+    assert(mockTool15 !== null, 'mock_tool_15 registered');
+    assert(mockTool15?.category === 'nav', `category=nav (got ${mockTool15?.category})`);
 
     // Cleanup
-    fs.rmSync(path.join(ROOT, 'data', '_test_real'), { recursive: true });
+    fs.rmSync(path.join(ROOT, 'data', '_test_large'), { recursive: true });
+    if (fs.existsSync(tmpDir)) fs.rmSync(tmpDir, { recursive: true });
 
     // ─── Summary ───
     console.log(`\n=== Results: ${passed} passed, ${failed} failed (${passed + failed} total) ===\n`);
