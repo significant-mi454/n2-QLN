@@ -1,0 +1,28 @@
+{
+    "name": "n2-qln",
+    "version": "3.0.0",
+    "description": "Quantum Layer Network — Semantic tool dispatcher for MCP. Route 1000 tools through 1 router.",
+    "main": "index.js",
+    "bin": {
+        "n2-qln": "./index.js"
+    },
+    "scripts": {
+        "start": "node index.js",
+        "test": "node test/run.js"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "~1.6.1",
+        "sql.js": "^1.12.0",
+        "zod": "~3.24.1"
+    },
+    "keywords": ["mcp", "ai", "tool-routing", "semantic-search", "llm"],
+    "author": "N2",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/choihyunsus/n2-QLN.git"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
