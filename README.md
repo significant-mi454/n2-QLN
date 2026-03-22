@@ -475,7 +475,7 @@ Contributions are welcome! Here's how to get started:
 
 ## Star History
 
-If you find QLN helpful, please consider giving us a star! ⭐
+No coffee? A star is fine too ☕→⭐
 
 ## License
 
