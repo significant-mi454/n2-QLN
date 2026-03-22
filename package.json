@@ -1,6 +1,6 @@
 {
     "name": "n2-qln",
-    "version": "3.4.0",
+    "version": "3.4.1",
     "description": "Query Layer Network — Semantic tool dispatcher for MCP. Route 1000 tools through 1 router.",
     "main": "index.js",
     "bin": {
