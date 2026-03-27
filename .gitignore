@@ -5,3 +5,7 @@ data/
 config.local.js
 .DS_Store
 Thumbs.db
+PLAN.md
+task.md
+walkthrough.md
+implementation_plan.md

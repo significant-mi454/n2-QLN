@@ -7,23 +7,23 @@ Each `*.json` file defines a provider and its tools for automatic indexing at QL
 
 ```json
 {
-    "provider": "my-mcp-server",
-    "version": "1.0.0",
-    "description": "Short description of this provider",
-    "tools": [
-        {
-            "name": "tool_name",
-            "description": "What this tool does (used for search matching)",
-            "category": "web|data|capture|ai|file|dev|misc",
-            "tags": ["keyword1", "keyword2"],
-            "examples": ["natural language query that should match this tool"],
-            "inputSchema": {
-                "properties": {
-                    "param1": { "type": "string", "description": "..." }
-                }
-            }
-        }
-    ]
+ "provider": "my-mcp-server",
+ "version": "1.0.0",
+ "description": "Short description of this provider",
+ "tools": [
+ {
+ "name": "tool_name",
+ "description": "What this tool does (used for search matching)",
+ "category": "web|data|capture|ai|file|dev|misc",
+ "tags": ["keyword1", "keyword2"],
+ "examples": ["natural language query that should match this tool"],
+ "inputSchema": {
+ "properties": {
+ "param1": { "type": "string", "description": "..." }
+ }
+ }
+ }
+ ]
 }
 ```
 
