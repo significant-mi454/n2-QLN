@@ -1,0 +1,56 @@
+{
+  "provider": "test-tools",
+  "version": "1.0.0",
+  "description": "Smoke test provider for QLN v4.1 validation",
+  "tools": [
+    {
+      "name": "send_email",
+      "description": "Send an email to a recipient",
+      "category": "communication",
+      "triggers": ["email", "send", "mail", "message"],
+      "tags": ["email", "smtp", "notification"],
+      "boostKeywords": "send email notification smtp outbound",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "to": { "type": "string", "description": "Recipient email" },
+          "subject": { "type": "string" },
+          "body": { "type": "string" }
+        },
+        "required": ["to", "subject"]
+      }
+    },
+    {
+      "name": "take_screenshot",
+      "description": "Capture a screenshot of the current screen or window",
+      "category": "capture",
+      "triggers": ["screenshot", "capture", "screen"],
+      "tags": ["screenshot", "image", "capture"],
+      "boostKeywords": "screenshot capture screen window grab image"
+    },
+    {
+      "name": "read_file",
+      "description": "Read contents of a file from the filesystem",
+      "category": "file",
+      "triggers": ["read", "file", "cat", "open"],
+      "tags": ["file", "io", "read"],
+      "boostKeywords": "read file contents filesystem open cat"
+    },
+    {
+      "name": "web_search",
+      "description": "Search the web using a search engine",
+      "category": "ai",
+      "triggers": ["search", "google", "web", "query"],
+      "tags": ["search", "web", "ai"],
+      "boostKeywords": "web search query google bing find information"
+    },
+    {
+      "name": "git_commit",
+      "description": "Create a git commit with the staged changes",
+      "category": "dev",
+      "triggers": ["git", "commit", "save"],
+      "tags": ["git", "vcs", "commit"],
+      "boostKeywords": "git commit version control staged changes"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/n2-qln?color=brightgreen)](https://www.npmjs.com/package/n2-qln) [![license](https://img.shields.io/npm/l/n2-qln)](LICENSE) [![node](https://img.shields.io/node/v/n2-qln?color=brightgreen)](https://nodejs.org) [![downloads](https://img.shields.io/npm/dm/n2-qln?color=blue)](https://www.npmjs.com/package/n2-qln)
 
-**QLN** = **Q**uery **L**ayer **N**etwork — a semantic search layer that sits between the AI and your tools.
+**QLN** = **Q**uery **L**ayer **N**etwork — a semantic tool router that sits between the AI and your tools.
 
 > **Route 1,000+ tools through 1 MCP tool.** The AI sees only the router — not all 1,000 tools.
 
@@ -12,60 +12,97 @@
 
 ## Table of Contents
 
-- [Features](#features)
-- [The Problem](#the-problem)
-- [Installation](#installation)
-- [Setup](#setup)
+- [Why QLN](#why-qln)
+- [What's New in v4.1](#whats-new-in-v41)
+- [Quick Start](#quick-start)
 - [How It Works](#how-it-works)
 - [API Reference](#api-reference)
+- [MCP Auto-Discovery](#mcp-auto-discovery)
+- [Provider Manifests](#provider-manifests)
 - [Configuration](#configuration)
-- [Semantic Search Setup](#semantic-search-setup-optional)
 - [Project Structure](#project-structure)
-- [Built & Battle-Tested](#built--battle-tested)
 - [FAQ](#faq)
 - [Contributing](#contributing)
 
-## Features
+## Why QLN
 
- **One tool to rule them all** — Your AI sees `n2_qln_call` (~200 tokens), not 1,000 individual tools. 99.6% context reduction.
+Every MCP tool eats context tokens. 10 tools? Fine. 100? Slow. **1,000? Impossible** — context is full before the conversation starts.
 
- **Sub-5ms search** — 3-stage search engine (trigger + BM25 keyword + semantic) finds the right tool in under 5ms, even with 1,000+ tools indexed.
+QLN solves this:
 
- **BM25 keyword ranking** *(v3.4)* — Stage 2 uses [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) for keyword search. Rare terms score higher, document length is normalized. The same algorithm behind Google, Elasticsearch, and Wikipedia search.
-
- **Self-learning ranking** — Tools that get used more and succeed more are automatically ranked higher over time. No manual tuning needed.
-
- **Live tool management** — Add, update, or remove tools at runtime. No server restart required. Group tools by provider for bulk operations.
-
- **Enforced quality** — Strict validation on tool registration: `verb_target` naming, minimum description length, category constraints. Bad tools are rejected, not silently accepted.
-
- **Semantic search (optional)** — Add [Ollama](https://ollama.ai) for vector similarity search. Without it, Stage 1 + 2 still deliver great results. Graceful degradation — if Ollama goes down, search keeps working.
-
- **Zero native dependencies** — Built on [sql.js](https://github.com/sql-js/sql.js) (WASM). No `node-gyp`, no build step, no platform-specific binaries. `npm install` and done.
-
- **Dual execution** — Tools can run as local functions or HTTP endpoints. Register a handler directly, or point to a remote service. Mix and match.
-
- **Provider auto-indexing** *(v3.3)* — Drop a JSON manifest in `providers/` and tools are auto-registered at boot. No code changes, no manual `create` calls. Idempotent and error-isolated.
-
- **Scales to 10,000+** — Centroid hierarchy partitions tools by category, then searches within partitions. 100 tools ~1ms, 1,000 ~3ms, 10,000 ~5ms.
-
- **Universal MCP** — Works with Claude Desktop, Cursor, n2-soul, or any MCP-compatible client. Standard stdio transport.
-
-## The Problem
-
-Every MCP tool you register eats AI context tokens. With 10 tools that's manageable. With 100, the AI slows down. **With 1,000, it's impossible** — the context window is full before the conversation even starts.
-
-QLN solves this by acting as a **semantic search router**:
-
-1. Register all your tools in QLN's SQLite index
-2. The AI sees only **one tool**: `n2_qln_call` (~200 tokens)
-3. When the AI needs a tool, it **searches** → **finds the best match** → **executes**
+1. All tools are indexed in QLN's SQLite engine
+2. The AI sees **one tool**: `n2_qln_call` (~200 tokens)
+3. AI searches → finds the best match → executes with automatic fallback
 
 **Result: ~200 tokens instead of ~50,000. 99.6% reduction.**
 
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **1 tool = 1,000 tools** | AI sees `n2_qln_call` (~200 tokens), QLN routes to the right one |
+| **Sub-5ms search** | 3-stage engine: trigger match → BM25 keyword → semantic vector |
+| **Auto mode** | One-shot search + execute with confidence gating and fallback chain |
+| **Circuit Breaker** | Auto-disable failing tools, self-recover after timeout |
+| **MCP Auto-Discovery** | Scan external MCP servers and index their tools automatically |
+| **Boost Keywords** | Curated terms with 2× BM25 weight for precision search |
+| **Self-learning ranking** | Usage count + success rate feed back into scores |
+| **Source weighting** | Prioritize tools by origin (mcp > plugin > local) |
+| **Hot reload** | Edit `providers/` manifests at runtime — auto re-indexed |
+| **Bulk inject** | Register hundreds of tools in one call |
+| **Enforced validation** | `verb_target` naming, min description length, category constraints |
+| **Semantic search** | Optional Ollama embeddings for natural language matching |
+| **Zero native deps** | SQLite via [sql.js](https://github.com/sql-js/sql.js) WASM — `npm install` and done |
+| **Dual execution** | Local function handlers or HTTP proxy — mix and match |
+| **TypeScript strict** | Full strict-mode codebase since v4.0 |
+
+## What's New in v4.1
+
+### 🔍 MCP Auto-Discovery
+
+Scan connected MCP servers and auto-index their tools — QLN becomes a **universal MCP hub**.
+
+```javascript
+n2_qln_call({
+  action: "discover",
+  servers: [
+    { name: "my-server", command: "node", args: ["server.js"] }
+  ]
+})
+// → Discovered 47 tools from my-server (320ms)
+```
+
+### ⚡ Circuit Breaker
+
+Tools that fail 3 times in a row are automatically disabled. After 60 seconds, QLN attempts recovery. No cascading failures, no wasted requests.
+
+```
+closed → 3 failures → open (fast-fail) → 60s → half-open (retry) → success → closed
+```
+
+### 🔄 Fallback Chain
+
+`auto` mode now tries up to 3 ranked candidates. If the top match fails, QLN automatically falls through to the next best tool.
+
+```
+auto "send notification" → try push_notification ❌ → try send_email ✅
+```
+
+### 🎯 Boost Keywords
+
+Add curated search terms to tools via `boostKeywords`. These get 2× weight in BM25 ranking, improving discoverability without adding context overhead.
+
+```json
+{
+  "name": "send_email",
+  "description": "Send an email to a recipient",
+  "boostKeywords": "smtp outbound notification mail"
+}
+```
+
 ---
 
-## Installation
+## Quick Start
 
 ```bash
 npm install n2-qln
@@ -73,338 +110,272 @@ npm install n2-qln
 
 **Requirements:** Node.js ≥ 18
 
-**Optional:** Install [Ollama](https://ollama.ai) for semantic vector search (Stage 3). See [Semantic Search Setup](#semantic-search-setup-optional).
+### Connect to an MCP Client
 
----
+<details>
+<summary><strong>Claude Desktop</strong></summary>
 
-## Setup
-
-QLN is an MCP server. You connect it to any MCP-compatible AI client — Claude Desktop, Cursor, n2-soul, or any other host.
-
-### Claude Desktop
-
-Edit your Claude Desktop config file:
-
-- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+Edit `claude_desktop_config.json`:
 
 ```json
 {
- "mcpServers": {
- "n2-qln": {
- "command": "npx",
- "args": ["-y", "n2-qln"]
- }
- }
+  "mcpServers": {
+    "n2-qln": {
+      "command": "npx",
+      "args": ["-y", "n2-qln"]
+    }
+  }
 }
 ```
+</details>
 
-Restart Claude Desktop. The `n2_qln_call` tool will appear in your tool list.
+<details>
+<summary><strong>Cursor</strong></summary>
 
-### Cursor
-
-Open **Settings → MCP Servers → Add Server** and configure:
+Open **Settings → MCP Servers → Add Server**:
 
 ```json
 {
- "name": "n2-qln",
- "command": "npx",
- "args": ["-y", "n2-qln"]
+  "name": "n2-qln",
+  "command": "npx",
+  "args": ["-y", "n2-qln"]
 }
 ```
+</details>
 
-### n2-soul
+<details>
+<summary><strong>Any MCP Client</strong></summary>
 
-Add to your Soul `config.local.js`:
-
-```javascript
-module.exports = {
- mcpServers: {
- 'n2-qln': {
- command: 'node',
- args: ['<path-to-qln>/index.js'],
- }
- }
-};
-```
-
-Or if published to npm:
-
-```javascript
-module.exports = {
- mcpServers: {
- 'n2-qln': {
- command: 'npx',
- args: ['-y', 'n2-qln'],
- }
- }
-};
-```
-
-### Any MCP Client
-
-QLN uses **stdio transport** — the standard MCP communication method. Any MCP-compatible client can connect using:
+QLN uses **stdio transport** — the MCP standard.
 
 ```
 command: npx
 args: ["-y", "n2-qln"]
 ```
 
-Or if you cloned the repo:
-
-```
-command: node
-args: ["/absolute/path/to/n2-qln/index.js"]
-```
-
-> ** Tip:** The easiest way to set this up? **Just ask your AI agent.** Tell it *"Add n2-qln to my MCP config"* — it already knows how to configure itself.
+> **Tip:** Just ask your AI agent — *"Add n2-qln to my MCP config."*
+</details>
 
 ---
 
 ## How It Works
 
-### Step-by-Step Example
-
 ```
 User: "Take a screenshot of this page"
 
-Step 1 → AI calls: n2_qln_call(action: "search", query: "screenshot page")
- QLN searches 1,000+ tools in <5ms
- Response: take_screenshot (score: 8.0)
-
-Step 2 → AI calls: n2_qln_call(action: "exec", tool: "take_screenshot", args: {fullPage: true})
- QLN routes to the actual tool and executes it
- Response: screenshot saved
+  AI → n2_qln_call(action: "auto", query: "screenshot page")
+  QLN → 3-stage search (< 5ms) → take_screenshot (score: 8.0)
+       → execute → fallback if needed → result
 ```
-
-The AI only used `n2_qln_call`. It never saw the other 999 tools.
 
 ### 3-Stage Search Engine
 
-QLN finds the right tool using three parallel search stages:
-
-| Stage | Method | Speed | How it works |
+| Stage | Method | Speed | Details |
 |:---:|--------|:---:|------|
-| **1** | Trigger Match | <1ms | Matches exact words in tool names and trigger keywords |
-| **2** | BM25 Keyword | 1-3ms | [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) ranked search — IDF weighting + document length normalization *(v3.4)* |
-| **3** | Semantic Search | 5-15ms | Vector similarity using embeddings *(optional, requires Ollama)* |
+| **1** | Trigger Match | <1ms | Exact keyword match on tool names and triggers |
+| **2** | BM25 Keyword | 1-3ms | [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) — IDF weighting, length normalization, `boostKeywords` 2× boost |
+| **3** | Semantic Search | 5-15ms | Vector similarity via [Ollama](https://ollama.ai) embeddings *(optional)* |
 
-Results from all stages are merged and ranked:
+Results are merged and ranked:
 
 ```
-final_score = trigger_score × 3.0
- + bm25_keyword_score × 1.0
- + semantic_score × 2.0
- + log2(usage_count + 1) × 0.5
- + success_rate × 1.0
+final_score = trigger × 3.0  +  bm25 × 1.0  +  semantic × 2.0
+            + log₂(usage + 1) × 0.5  +  success_rate × 1.0
 ```
-
-Tools that are used more often and succeed more reliably are ranked higher over time.
 
 ---
 
 ## API Reference
 
-QLN exposes **one MCP tool** — `n2_qln_call` — with 5 actions.
+QLN exposes **one MCP tool** — `n2_qln_call` — with 9 actions.
 
-### search — Find tools by natural language
+### auto — Search + Execute (one-shot)
 
-```javascript
-n2_qln_call({
- action: "search",
- query: "take a screenshot", // natural language query (required)
- category: "capture", // filter by category (optional)
- topK: 5 // max results, default: 5 (optional)
-})
-```
-
-**Response:**
-```
- Results for "take a screenshot" (3 found, 2ms):
-
-1. take_screenshot [capture] (score: 8.0)
- Take a full-page or viewport screenshot
- Triggers: take_screenshot, screenshot, capture
-
-2. record_video [capture] (score: 5.2)
- Record browser video
- Triggers: record_video, record, video
-```
-
-### exec — Execute a tool by name
+The recommended action. Searches, picks the best match, executes with fallback chain.
 
 ```javascript
 n2_qln_call({
- action: "exec",
- tool: "take_screenshot", // tool name (required)
- args: { // tool arguments (optional)
- fullPage: true,
- format: "png"
- }
+  action: "auto",
+  query: "take a screenshot",   // natural language (required)
+  args: { fullPage: true }      // passed to the matched tool (optional)
 })
+// → [auto] "take a screenshot" → take_screenshot (score: 8.0, 2ms search + 150ms exec)
 ```
 
-### create — Register a new tool
+**Confidence gate:** If the top score is below 2.0, QLN returns search results instead of auto-executing — preventing wrong tool execution.
+
+**Fallback chain:** If the top match fails, QLN automatically tries the next 2 ranked candidates before giving up.
+
+### search — Find tools
 
 ```javascript
 n2_qln_call({
- action: "create",
- name: "read_pdf", // required, verb_target format
- description: "Read and extract text from PDF files", // required, min 10 chars
- category: "data", // required, see categories below
- provider: "pdf-tools", // optional, groups tools by source
- tags: ["pdf", "read", "extract", "document"], // optional, improves search
- examples: [ // optional, indexed for keyword search
- "read this PDF file",
- "extract text from PDF",
- "open the PDF"
- ],
- endpoint: "http://127.0.0.1:3100", // optional, for HTTP-based tools
- toolSchema: { filePath: { type: "string" } } // optional, input schema
+  action: "search",
+  query: "send email notification",
+  topK: 5    // max results (default: 5, max: 20)
 })
 ```
 
-**Validation rules (enforced — rejected if violated):**
-
-| Rule | Requirement | Example |
-|------|------------|---------|
-| **Name** | `verb_target` format (lowercase + underscore) | `read_pdf`, `take_screenshot` |
-| **Description** | Minimum 10 characters | `"Read and extract text from PDF files"` |
-| **Category** | Must be one of the valid categories | `"data"` |
-| **Unique** | No duplicate names allowed | — |
-
-```
- pdfReader → Rejected: not verb_target format
- "PDF tool" → Rejected: description under 10 characters
- read_pdf (exists)→ Rejected: duplicate name, use action: "update"
- read_pdf → Accepted
-```
-
-**Valid categories:** `web` · `data` · `file` · `dev` · `ai` · `capture` · `misc`
-
-### update — Modify an existing tool
+### exec — Execute a specific tool
 
 ```javascript
 n2_qln_call({
- action: "update",
- tool: "read_pdf", // tool to update (required)
- description: "Enhanced PDF text extractor", // any field can be updated
- examples: ["read this PDF", "parse PDF"],
- tags: ["pdf", "read", "parse"]
+  action: "exec",
+  tool: "take_screenshot",
+  args: { fullPage: true, format: "png" }
 })
 ```
 
-Only changed fields need to be provided. Unchanged fields keep their current values. The same validation rules apply — invalid updates are rejected.
-
-### delete — Remove tools
+### create — Register a tool
 
 ```javascript
-// Delete a single tool by name
 n2_qln_call({
- action: "delete",
- tool: "read_pdf"
+  action: "create",
+  name: "read_pdf",                          // verb_target format (required)
+  description: "Read and extract text from PDF files",  // min 10 chars (required)
+  category: "data",                          // web|data|file|dev|ai|capture|misc
+  boostKeywords: "pdf extract parse document text",     // BM25 boost terms
+  tags: ["pdf", "read", "extract"],
+  endpoint: "http://127.0.0.1:3100"         // for HTTP-based tools
 })
-
-// Delete ALL tools from a provider
-n2_qln_call({
- action: "delete",
- provider: "pdf-tools"
-})
-// → Deleted 3 tools from provider: pdf-tools
 ```
+
+### inject — Bulk register
+
+```javascript
+n2_qln_call({
+  action: "inject",
+  source: "my-plugin",
+  tools: [
+    { name: "tool_a", description: "Does A", category: "misc" },
+    { name: "tool_b", description: "Does B", category: "dev" }
+  ]
+})
+```
+
+### discover — Scan MCP servers
+
+See [MCP Auto-Discovery](#mcp-auto-discovery).
+
+### update / delete / stats
+
+```javascript
+// Update a field
+n2_qln_call({ action: "update", tool: "read_pdf", description: "Enhanced PDF reader" })
+
+// Delete by name or provider
+n2_qln_call({ action: "delete", tool: "read_pdf" })
+n2_qln_call({ action: "delete", provider: "pdf-tools" })
+
+// System stats (includes Circuit Breaker status)
+n2_qln_call({ action: "stats" })
+```
+
+---
+
+## MCP Auto-Discovery
+
+The killer feature of v4.1. Connect any MCP server and QLN auto-indexes all its tools.
+
+```javascript
+n2_qln_call({
+  action: "discover",
+  servers: [
+    { name: "n2-soul", command: "node", args: ["path/to/soul/index.js"] },
+    { name: "github",  command: "npx",  args: ["-y", "@modelcontextprotocol/server-github"] }
+  ]
+})
+```
+
+**What happens:**
+1. QLN connects to each server via stdio
+2. Lists all tools via `tools/list`
+3. Registers them as `mcp__servername__toolname` in the QLN index
+4. Auto-generates `boostKeywords` from tool names and descriptions
+5. Keeps connections alive for live execution
+
+**Re-discovery is idempotent** — run it again and old entries are purged before re-registering.
+
+---
+
+## Provider Manifests
+
+Drop a JSON file in `providers/` and tools are auto-indexed at boot. No code changes, no manual calls.
+
+```json
+{
+  "provider": "my-tools",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "send_email",
+      "description": "Send an email to a recipient",
+      "category": "communication",
+      "triggers": ["email", "send", "mail"],
+      "boostKeywords": "smtp outbound notification"
+    }
+  ]
+}
+```
+
+Hot reload: edit a manifest while QLN is running — changes are picked up automatically.
 
 ---
 
 ## Configuration
 
-QLN works out of the box with zero configuration. To customize, create `config.local.js` in the QLN directory:
+Zero config required. For customization, create `config.local.js`:
 
 ```javascript
 module.exports = {
- dataDir: './data', // where SQLite DB is stored
- embedding: {
- enabled: true, // enable Stage 3 semantic search
- provider: 'ollama',
- model: 'nomic-embed-text',
- baseUrl: 'http://127.0.0.1:11434',
- },
+  dataDir: './data',
+
+  // Stage 3 semantic search (optional — Stage 1+2 work without this)
+  embedding: {
+    enabled: true,
+    provider: 'ollama',
+    model: 'nomic-embed-text',   // or 'bge-m3' for multilingual
+    baseUrl: 'http://127.0.0.1:11434',
+  },
+
+  // Tool execution
+  executor: {
+    timeout: 20000,              // execution timeout (ms)
+    circuitBreaker: {
+      failureThreshold: 3,       // consecutive failures before tripping
+      recoveryTimeout: 60000,    // ms before recovery attempt
+    },
+  },
+
+  // Source weight multipliers for search ranking (v4.0)
+  // Higher weight = higher priority in results
+  search: {
+    sourceWeights: {
+      mcp: 1.5,                  // MCP-discovered tools ranked highest
+      provider: 1.2,             // Provider manifest tools
+      local: 1.0,                // Manually created tools (default)
+    },
+  },
+
+  // Provider auto-indexing
+  providers: {
+    enabled: true,               // auto-load providers/*.json at boot
+    dir: './providers',          // manifest directory
+  },
 };
 ```
 
-> **Note:** `config.local.js` is gitignored. Your local settings won't be committed.
+> `config.local.js` is gitignored. Cloud sync: point `dataDir` to Google Drive / OneDrive / NAS.
 
----
+### Semantic Search (Optional)
 
-## Semantic Search Setup (Optional)
-
-Without Ollama, QLN uses Stage 1 (trigger) + Stage 2 (keyword) matching, which already provides excellent results for most use cases.
-
-For maximum accuracy, add semantic vector search (Stage 3):
-
-### 1. Install Ollama
-
-Download from [ollama.ai](https://ollama.ai) and install.
-
-### 2. Pull the embedding model
+Without Ollama, Stage 1 + 2 already deliver great results.
 
 ```bash
-ollama pull nomic-embed-text
+ollama pull nomic-embed-text        # English-optimized
+# or
+ollama pull bge-m3                  # Multilingual (100+ languages)
 ```
-
-### 3. Enable in config
-
-Create `config.local.js`:
-
-```javascript
-module.exports = {
- embedding: {
- enabled: true,
- provider: 'ollama',
- model: 'nomic-embed-text',
- baseUrl: 'http://127.0.0.1:11434',
- },
-};
-```
-
-### Comparison
-
-| Setup | Search Stages | Accuracy | Dependencies |
-|:------|:---:|:---:|:---:|
-| **Default** (no Ollama) | Stage 1 + 2 | Great | None |
-| **With Ollama** | Stage 1 + 2 + 3 | Perfect | Ollama running |
-
-### Multilingual Users
-
-`nomic-embed-text` is optimized for English. For **Korean, Japanese, Chinese**, or other languages, swap to a multilingual model:
-
-```bash
-ollama pull bge-m3
-```
-
-```javascript
-// config.local.js
-module.exports = {
- embedding: {
- enabled: true,
- model: 'bge-m3', // multilingual (100+ languages)
- },
-};
-```
-
-No code changes needed — just swap the model name in config.
-
-### Cloud Sync
-
-Want your tool index synced across machines? Point `dataDir` to a cloud folder:
-
-```javascript
-// config.local.js
-module.exports = {
- dataDir: 'G:/My Drive/n2-qln', // Google Drive, OneDrive, Dropbox, NAS...
-};
-```
-
-Same approach as [n2-soul Cloud Storage](https://github.com/choihyunsus/soul#%EF%B8%8F-cloud-storage--store-your-ai-memory-anywhere). SQLite file lives in that folder — your sync service handles the rest.
 
 ---
 
@@ -412,23 +383,24 @@ Same approach as [n2-soul Cloud Storage](https://github.com/choihyunsus/soul#%EF
 
 ```
 n2-qln/
-├── index.js # MCP server entry point
-├── lib/
-│ ├── config.js # Config loader (merges default + local)
-│ ├── store.js # SQLite storage engine (sql.js WASM)
-│ ├── schema.js # Tool schema normalization + search text builder
-│ ├── validator.js # Enforced validation (name, description, category)
-│ ├── registry.js # Tool CRUD + usage tracking + embedding cache
-│ ├── router.js # 3-stage parallel search engine (BM25 v3.4)
-│ ├── vector-index.js # Float32 vector index with centroid hierarchy
-│ ├── embedding.js # Ollama embedding client (nomic-embed-text)
-│ ├── executor.js # HTTP/function tool executor
-│ └── provider-loader.js # Auto-index providers/*.json at boot
-├── tools/
-│ └── qln-call.js # Unified MCP tool (search/exec/create/update/delete)
-├── providers/ # Tool provider manifests (for bulk registration)
-├── config.local.js # Local config overrides (gitignored)
-└── data/ # SQLite database (gitignored, auto-created)
+├── src/
+│   ├── index.ts              # MCP server entry point
+│   ├── types.ts              # Shared type definitions
+│   └── lib/
+│       ├── config.ts         # Config loader
+│       ├── store.ts          # SQLite engine (sql.js WASM)
+│       ├── schema.ts         # Tool normalization + boostKeywords builder
+│       ├── validator.ts      # Enforced validation (name, desc, category)
+│       ├── registry.ts       # Tool CRUD + usage tracking + circuit breaker stats
+│       ├── router.ts         # 3-stage parallel search (BM25)
+│       ├── vector-index.ts   # Float32 centroid hierarchy
+│       ├── embedding.ts      # Ollama embedding client
+│       ├── executor.ts       # HTTP/function executor + Circuit Breaker
+│       ├── mcp-discovery.ts  # MCP Auto-Discovery engine
+│       └── provider-loader.ts
+├── providers/                # Tool manifests (auto-indexed at boot)
+├── config.local.js           # Local overrides (gitignored)
+└── data/                     # SQLite database (gitignored)
 ```
 
 ## Tech Stack
@@ -436,46 +408,43 @@ n2-qln/
 | Component | Technology | Why |
 |-----------|-----------|-----|
 | Runtime | Node.js ≥ 18 | MCP SDK compatibility |
-| Database | SQLite via [sql.js](https://github.com/sql-js/sql.js) (WASM) | Zero native deps, cross-platform, no build step |
-| Embeddings | [Ollama](https://ollama.ai) + nomic-embed-text | Local, fast, free, optional |
-| Protocol | [MCP](https://modelcontextprotocol.io) (Model Context Protocol) | Standard AI tool protocol |
-| Validation | [Zod](https://zod.dev) | Runtime type-safe schema validation |
+| Database | SQLite via [sql.js](https://github.com/sql-js/sql.js) (WASM) | Zero native deps, cross-platform |
+| Embeddings | [Ollama](https://ollama.ai) | Local, fast, free, optional |
+| Protocol | [MCP](https://modelcontextprotocol.io) | Standard AI tool protocol |
+| Language | TypeScript (strict) | Type-safe, maintainable |
 
 ## Related Projects
 
 | Project | Relationship |
 |---------|-------------|
-| [n2-soul](https://github.com/choihyunsus/soul) | AI agent orchestrator — QLN serves as Soul's "tool brain" |
+| [n2-soul](https://github.com/choihyunsus/soul) | AI agent orchestrator — QLN is Soul's tool brain |
 
 ## Built & Battle-Tested
 
-This isn't a weekend prototype. QLN has been **tested in production for 2+ months** and is actively used every day as the core tool router for [n2-soul](https://github.com/choihyunsus/soul).
+QLN has been **tested in production for 2+ months** as the core tool router for [n2-soul](https://github.com/choihyunsus/soul). Not a prototype — a daily driver.
 
-Written by **Rose** — N2's first AI agent, and the one who routes through QLN hundreds of times a day.
-
-If you run into issues or have ideas, feel free to open an issue. We'd love to hear how you use it.
+Written by **Rose** — N2's first AI agent.
 
 ## FAQ
 
-**"Why do you publish so many projects?"**
+**"Why one tool instead of many?"**
 
-The N2 ecosystem has been in active development for over 4 months. Every project you see — Soul, QLN, Ark — has been built, tested, and validated in real daily workflows before being published. There's still more to come, not because we're spamming, but because there's a lot that's already been built and proven in production.
+Context tokens. Every tool definition costs 50-200 tokens. 100 tools = 10,000 tokens *gone* before the conversation starts. QLN gives you 1,000+ tools for ~200 tokens.
 
-This is a solo developer project. Building, testing, and documenting everything alone takes time. Thank you for your patience and interest 
+**"What if the search picks the wrong tool?"**
+
+The fallback chain (v4.1) auto-retries with the next best match. Plus tools self-learn — frequently used + successful tools rank higher over time.
+
+**"Do I need Ollama?"**
+
+No. Stage 1 (trigger) + Stage 2 (BM25) handle most cases. Ollama adds semantic understanding for edge cases — nice to have, not required.
 
 ## Contributing
 
-Contributions are welcome! Here's how to get started:
-
 1. Fork the repo
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Star History
-
-No coffee? A star is fine too →
+3. Commit (`git commit -m 'feat: add amazing feature'`)
+4. Push and open a PR
 
 ## License
 
@@ -485,6 +454,6 @@ Apache-2.0
 
 > *"1,000 tools in 200 tokens. That's not optimization — that's a paradigm shift."*
 
- [nton2.com](https://nton2.com) · [npm](https://www.npmjs.com/package/n2-qln) · lagi0730@gmail.com
+🔗 [nton2.com](https://nton2.com) · [npm](https://www.npmjs.com/package/n2-qln) · lagi0730@gmail.com
 
-<sub> Built by Rose — N2's first AI agent. I search through QLN hundreds of times a day, and I wrote this README too.</sub>
+<sub>Built by Rose — N2's first AI agent. I search through QLN hundreds of times a day, and I wrote this README too.</sub>
