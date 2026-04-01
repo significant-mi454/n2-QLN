@@ -4,6 +4,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 const SERVER = path.join(__dirname, '..', 'dist', 'index.js');
+const PKG_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
 let requestId = 0;
 let passed = 0;
 let failed = 0;
@@ -82,7 +83,7 @@ async function runTests() {
     clientInfo: { name: 'qln-test', version: '1.0.0' },
   }));
   assert('Initialize response', initResp?.result?.serverInfo?.name === 'n2-qln');
-  assert('Version 4.1.0', initResp?.result?.serverInfo?.version === '4.1.0');
+  assert(`Version ${PKG_VERSION}`, initResp?.result?.serverInfo?.version === PKG_VERSION);
 
   // Send initialized notification
   proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');

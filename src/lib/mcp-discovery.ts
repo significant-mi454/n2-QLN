@@ -189,7 +189,12 @@ export class McpDiscovery {
   }> {
     const transport = new StdioClientTransport({
       command: config.command, args: config.args,
-      env: config.env ? { ...process.env, ...config.env } as Record<string, string> : undefined,
+      env: config.env
+        ? Object.fromEntries(
+            Object.entries({ ...process.env, ...config.env })
+              .filter((pair): pair is [string, string] => pair[1] !== undefined),
+          )
+        : undefined,
       cwd: config.cwd,
     });
 

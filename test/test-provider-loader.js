@@ -5,7 +5,7 @@ const fs = require('fs');
 
 // Paths
 const ROOT = path.join(__dirname, '..');
-const LIB = path.join(ROOT, 'lib');
+const LIB = path.join(ROOT, 'dist', 'lib');
 
 // Direct module imports (avoid full MCP server boot)
 const { Store } = require(path.join(LIB, 'store'));

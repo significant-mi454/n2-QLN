@@ -3,14 +3,11 @@ data/
 _data/
 test/
 providers/
-/lib/
-/tools/
 docs/
 .git/
 .github/
 .gitignore
 config.local.js
 tsconfig.json
-MIGRATION_PLAN.md
 *.ts.map
 *.d.ts.map

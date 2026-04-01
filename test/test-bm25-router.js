@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const ROOT = path.join(__dirname, '..');
-const LIB = path.join(ROOT, 'lib');
+const LIB = path.join(ROOT, 'dist', 'lib');
 
 const { Store } = require(path.join(LIB, 'store'));
 const { Registry } = require(path.join(LIB, 'registry'));

@@ -16,24 +16,31 @@ export class Embedding {
   private endpoint: string;
   public dimensions: number | null;
   private _available: boolean | null;
+  private _availableCheckedAt: number;
 
   constructor(config: EmbeddingConfig = {}) {
     this.model = config.model || 'nomic-embed-text';
     this.endpoint = config.endpoint || 'http://127.0.0.1:11434';
     this.dimensions = null;
     this._available = null;
+    this._availableCheckedAt = 0;
   }
 
-  /** Check Ollama availability (cached). */
+  /** Check Ollama availability (TTL cached — re-checks every 5 minutes). */
   async isAvailable(): Promise<boolean> {
-    if (this._available !== null) return this._available;
+    const TTL_MS = 5 * 60 * 1000;
+    if (this._available !== null && (Date.now() - this._availableCheckedAt) < TTL_MS) {
+      return this._available;
+    }
     try {
       const vec = await this.embed('test');
       this._available = vec.length > 0;
       this.dimensions = vec.length;
+      this._availableCheckedAt = Date.now();
       return this._available;
     } catch {
       this._available = false;
+      this._availableCheckedAt = Date.now();
       return false;
     }
   }

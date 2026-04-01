@@ -33,11 +33,15 @@ export class Store {
   private _dataDir: string;
   private _db: SqlJsDatabase | null;
   private _dbPath: string;
+  private _batchMode: boolean;
+  private _batchDirty: boolean;
 
   constructor(dataDir: string) {
     this._dataDir = dataDir;
     this._db = null;
     this._dbPath = path.join(dataDir, 'qln-tools.sqlite');
+    this._batchMode = false;
+    this._batchDirty = false;
   }
 
   /** Async init — load sql.js + open DB + create schema */
@@ -126,6 +130,26 @@ export class Store {
     } catch { /* already exists */ }
   }
 
+  /**
+   * Enter batch mode — suppresses per-upsert disk writes.
+   * Call endBatch() when done to flush once.
+   */
+  beginBatch(): void {
+    this._batchMode = true;
+    this._batchDirty = false;
+  }
+
+  /**
+   * Exit batch mode — flush to disk if any writes occurred.
+   */
+  endBatch(): void {
+    this._batchMode = false;
+    if (this._batchDirty) {
+      this._persist();
+      this._batchDirty = false;
+    }
+  }
+
   /** Upsert a tool entry. */
   upsert(entry: ToolEntry): void {
     this._db!.run(`
@@ -162,7 +186,11 @@ export class Store {
       entry.usageCount, entry.successRate, entry.consecutiveFailures || 0,
       entry.lastUsedAt || null,
     ]);
-    this._persist();
+    if (this._batchMode) {
+      this._batchDirty = true;
+    } else {
+      this._persist();
+    }
   }
 
   /** Remove a tool by name. */

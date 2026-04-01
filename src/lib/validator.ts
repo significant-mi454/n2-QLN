@@ -31,25 +31,25 @@ interface ValidationResult {
 /** Validate name: required + verb_target format */
 function _validateName(name: string | undefined, errors: ValidationError[]): void {
   if (!name || name.trim() === '') {
-    errors.push({ field: 'name', message: 'name은 필수입니다', severity: 'error' });
+    errors.push({ field: 'name', message: 'name is required', severity: 'error' });
   } else if (!NAME_PATTERN.test(name)) {
-    errors.push({ field: 'name', message: `'${name}' → 동사_대상 형식 필수 (예: read_pdf, take_screenshot)`, severity: 'error' });
+    errors.push({ field: 'name', message: `'${name}' must follow verb_target format (e.g. read_pdf, take_screenshot)`, severity: 'error' });
   }
 }
 
 /** Validate description: required + min length */
 function _validateDescription(desc: string | undefined, errors: ValidationError[]): void {
   if (!desc || desc.trim() === '') {
-    errors.push({ field: 'description', message: 'description은 필수입니다 (도구 용도 설명)', severity: 'error' });
+    errors.push({ field: 'description', message: 'description is required (explain what the tool does)', severity: 'error' });
   } else if (desc.trim().length < MIN_DESCRIPTION_LENGTH) {
-    errors.push({ field: 'description', message: `최소 ${MIN_DESCRIPTION_LENGTH}자 이상 설명 필요 (현재: ${desc.trim().length}자)`, severity: 'error' });
+    errors.push({ field: 'description', message: `minimum ${MIN_DESCRIPTION_LENGTH} characters required (current: ${desc.trim().length})`, severity: 'error' });
   }
 }
 
 /** Validate category: must be in enum */
 function _validateCategory(category: string | undefined, errors: ValidationError[]): void {
   if (category && !(VALID_CATEGORIES as readonly string[]).includes(category)) {
-    errors.push({ field: 'category', message: `'${category}' → ${VALID_CATEGORIES.join('|')} 중 하나`, severity: 'error' });
+    errors.push({ field: 'category', message: `'${category}' is not valid — use one of: ${VALID_CATEGORIES.join(' | ')}`, severity: 'error' });
   }
 }
 
@@ -66,12 +66,12 @@ export function validateToolEntry(params: ValidatableParams, registry: RegistryL
 
   // Rule 4: duplicate name check
   if (params.name && registry && registry.get(params.name)) {
-    errors.push({ field: 'name', message: `'${params.name}' 이미 존재합니다. action: "update" 를 사용하세요`, severity: 'error' });
+    errors.push({ field: 'name', message: `'${params.name}' already exists. Use action: "update" instead`, severity: 'error' });
   }
 
   // Warning: no tags (search accuracy may be lower)
   if (!params.tags || params.tags.length === 0) {
-    errors.push({ field: 'tags', message: 'tags 미지정 — 검색 정확도가 낮아질 수 있습니다', severity: 'warning' });
+    errors.push({ field: 'tags', message: 'no tags specified — search accuracy may be reduced', severity: 'warning' });
   }
 
   const errorCount = errors.filter(e => e.severity === 'error').length;
@@ -89,7 +89,7 @@ export function validateUpdateEntry(params: ValidatableParams, existing: Validat
   if (params.name && !NAME_PATTERN.test(params.name)) {
     errors.push({
       field: 'name',
-      message: `'${params.name}' → 동사_대상 형식 필수 (예: read_pdf, take_screenshot)`,
+      message: `'${params.name}' must follow verb_target format (e.g. read_pdf, take_screenshot)`,
       severity: 'error',
     });
   }
@@ -98,7 +98,7 @@ export function validateUpdateEntry(params: ValidatableParams, existing: Validat
   if (params.description && params.description.trim().length < MIN_DESCRIPTION_LENGTH) {
     errors.push({
       field: 'description',
-      message: `최소 ${MIN_DESCRIPTION_LENGTH}자 이상 설명 필요 (현재: ${params.description.trim().length}자)`,
+      message: `minimum ${MIN_DESCRIPTION_LENGTH} characters required (current: ${params.description.trim().length})`,
       severity: 'error',
     });
   }
@@ -108,7 +108,7 @@ export function validateUpdateEntry(params: ValidatableParams, existing: Validat
       && params.description.trim().length < existing.description.trim().length * 0.5) {
     errors.push({
       field: 'description',
-      message: `설명이 기존보다 50% 이상 짧아집니다 (${existing.description.trim().length}자 → ${params.description.trim().length}자)`,
+      message: `description is >50% shorter than existing (${existing.description.trim().length} → ${params.description.trim().length} chars)`,
       severity: 'warning',
     });
   }
@@ -117,7 +117,7 @@ export function validateUpdateEntry(params: ValidatableParams, existing: Validat
   if (params.category && !(VALID_CATEGORIES as readonly string[]).includes(params.category)) {
     errors.push({
       field: 'category',
-      message: `'${params.category}' → ${VALID_CATEGORIES.join('|')} 중 하나`,
+      message: `'${params.category}' is not valid — use one of: ${VALID_CATEGORIES.join(' | ')}`,
       severity: 'error',
     });
   }
@@ -139,8 +139,8 @@ export function formatValidationErrors(errors: ValidationError[]): string {
   });
 
   const header = errorCount > 0
-    ? `등록 거부 (${errorCount} error${errorCount > 1 ? 's' : ''}${warnCount > 0 ? `, ${warnCount} warning` : ''}):`
-    : `등록 완료 (${warnCount} warning${warnCount > 1 ? 's' : ''}):`;
+    ? `Registration rejected (${errorCount} error${errorCount > 1 ? 's' : ''}${warnCount > 0 ? `, ${warnCount} warning` : ''}):`
+    : `Registration complete (${warnCount} warning${warnCount > 1 ? 's' : ''}):`;
 
   return `${header}\n${lines.join('\n')}`;
 }

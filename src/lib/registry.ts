@@ -50,12 +50,17 @@ export class Registry {
     return entry;
   }
 
-  /** Batch register tools. */
+  /** Batch register tools (single disk write at the end). */
   registerBatch(tools: RawToolEntry[]): number {
+    this._store.beginBatch();
     let count = 0;
-    for (const raw of tools) {
-      try { this.register(raw); count++; }
-      catch { /* skip invalid */ }
+    try {
+      for (const raw of tools) {
+        try { this.register(raw); count++; }
+        catch { /* skip invalid */ }
+      }
+    } finally {
+      this._store.endBatch();
     }
     return count;
   }
@@ -105,24 +110,29 @@ export class Registry {
 
   // ── Embeddings ──
 
-  /** Precompute embeddings for tools without one. */
+  /** Precompute embeddings for tools without one (single disk write). */
   async precomputeEmbeddings(): Promise<EmbeddingPrecomputeResult> {
     if (!this._embedding) return { embedded: 0, skipped: 0, failed: 0 };
     const available = await this._embedding.isAvailable();
     if (!available) return { embedded: 0, skipped: 0, failed: 0 };
 
+    this._store.beginBatch();
     let embedded = 0, skipped = 0, failed = 0;
-    for (const [, entry] of this._cache) {
-      if (entry.embedding) { skipped++; continue; }
-      try {
-        const text = entry.searchText || buildSearchText(entry);
-        const vec = await this._embedding.embed(text);
-        if (vec.length > 0) {
-          entry.embedding = vec;
-          this._store.upsert(entry);
-          embedded++;
-        } else { failed++; }
-      } catch { failed++; }
+    try {
+      for (const [, entry] of this._cache) {
+        if (entry.embedding) { skipped++; continue; }
+        try {
+          const text = entry.searchText || buildSearchText(entry);
+          const vec = await this._embedding.embed(text);
+          if (vec.length > 0) {
+            entry.embedding = vec;
+            this._store.upsert(entry);
+            embedded++;
+          } else { failed++; }
+        } catch { failed++; }
+      }
+    } finally {
+      this._store.endBatch();
     }
     return { embedded, skipped, failed };
   }

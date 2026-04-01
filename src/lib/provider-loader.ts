@@ -9,8 +9,7 @@ import type { ProviderManifest, ProviderLoadResult, RawToolEntry } from '../type
 /** Required fields for a valid provider manifest. */
 const REQUIRED_MANIFEST_FIELDS: readonly string[] = ['provider', 'tools'];
 
-/** Required fields for each tool entry within a manifest. */
-const REQUIRED_TOOL_FIELDS: readonly string[] = ['name', 'description'];
+
 
 /**
  * Load all provider manifests from a directory and register their tools.

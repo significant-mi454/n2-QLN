@@ -263,8 +263,8 @@ async function _handleExec(
       ? result
       : JSON.stringify(result, null, 2);
 
-    const truncated = resultStr.length > 4000
-      ? resultStr.substring(0, 4000) + '\n... (truncated)'
+    const truncated = resultStr.length > MAX_RESULT_LENGTH
+      ? resultStr.substring(0, MAX_RESULT_LENGTH) + '\n... (truncated)'
       : resultStr;
 
     return _text(`✅ [${toolName}] (${source}, ${elapsed}ms):\n${truncated}`);
