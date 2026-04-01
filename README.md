@@ -100,6 +100,16 @@ Add curated search terms to tools via `boostKeywords`. These get 2× weight in B
 }
 ```
 
+### v4.1.1 — Quality Patch
+
+| Change | Detail |
+|--------|--------|
+| **Batch Persist** | `registerBatch()` and `precomputeEmbeddings()` now write to disk once instead of per-tool. 1,000 tools = 1 write, not 1,000. |
+| **Embedding TTL** | `isAvailable()` re-checks Ollama every 5 minutes instead of caching permanently. Late-start Ollama now detected. |
+| **Strict TypeScript** | `noUnusedLocals` + `noUnusedParameters` enabled. Zero dead code. |
+| **Legacy Cleanup** | Removed 1,895 lines of pre-v4 JavaScript. Pure TypeScript codebase. |
+| **i18n** | All validator error messages switched to English for international users. |
+
 ---
 
 ## Quick Start
